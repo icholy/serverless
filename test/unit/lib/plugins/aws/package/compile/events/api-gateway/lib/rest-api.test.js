@@ -37,6 +37,27 @@ describe('#compileRestApi()', () => {
     };
   });
 
+  it.only('should create a REST API with tags', () => {
+    awsCompileApigEvents.serverless.service.provider.tags = { SERVICE: 'foo' };
+    awsCompileApigEvents.compileRestApi();
+    const resources =
+      awsCompileApigEvents.serverless.service.provider.compiledCloudFormationTemplate.Resources;
+
+    expect(resources.ApiGatewayRestApi).to.deep.equal({
+      Type: 'AWS::ApiGateway::RestApi',
+      Properties: {
+        BinaryMediaTypes: undefined,
+        DisableExecuteApiEndpoint: undefined,
+        Name: 'dev-new-service',
+        EndpointConfiguration: {
+          Types: ['EDGE'],
+        },
+        Policy: '',
+        Tags: [{ Key: 'SERVICE', Value: 'foo' }],
+      },
+    });
+  });
+
   it('should create a REST API resource', () => {
     awsCompileApigEvents.compileRestApi();
     const resources =
